@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informações Atuais</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Informações Atuais</h1>
+<div id="temperatura"></div>
+<div id="time"></div>
+<div id="localizacao"></div>
+
+<script>
+function obterInformacoesAtuais(apiKey, cidade, pais) {
+    var url = `https://api.openweathermap.org/data/2.5/weather?q=${cidade},${pais}&appid=${apiKey}&units=metric`;
+
+    axios.get(url)
+        .then(response => {
+            var data = response.data;
+            if (data.main && data.main.temp !== undefined) {
+                var temperatura = data.main.temp;
+                var localizacao = `${data.name}, ${data.sys.country}`;
+                
+                document.getElementById('temperatura').innerHTML = `Temperatura: ${temperatura}°C`;
+                document.getElementById('localizacao').innerHTML = `Localização: ${localizacao}`;
+            } else {
+                throw new Error('Resposta da API inesperada: dados ausentes ou inválidos.');
+            }
+        })
+        .catch(error => {
+            console.error(`Erro na solicitação: ${error.message}`);
+            document.getElementById('temperatura').innerHTML = 'Não foi possível obter a temperatura.';
+            document.getElementById('localizacao').innerHTML = 'Não foi possível obter a localização.';
+        });
+}
+
+function updateTime() {
+    var now = new Date();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
+    var seconds = now.getSeconds();
+
+    hours = hours < 10 ? "0" + hours : hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    var timeString = hours + ":" + minutes + ":" + seconds;
+
+    document.getElementById("time").innerText = timeString;
+}
+
+// Substitua 'SUA_CHAVE_API', 'Sao Paulo' e 'BR' pelos valores reais
+var apiKey = '41f3769e4115e8b6e663e5bbbba90a89git ';
+var cidade = 'Aveiro';
+var pais = 'PT';
+
+// Chame as funções para obter a temperatura, a localização e atualizar a hora
+obterInformacoesAtuais(apiKey, cidade, pais);
+setInterval(updateTime, 1000); // Atualiza a cada segundo
+updateTime(); // Atualiza imediatamente ao carregar a página
+
+</script>
+
+</body>
+</html>
